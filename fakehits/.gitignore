@@ -1,0 +1,9 @@
+o2sim*
+imgui.ini
+mergerlog
+serverlog
+workerlog*
+gphysi.dat
+dpl-config.json
+MCStepLogger*
+AutoDict*
