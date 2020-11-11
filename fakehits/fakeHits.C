@@ -39,13 +39,15 @@ void fakeHits(void)
     hits[i] = o2::trd::HitType(1.,1.,1., 0.0,0.0,0.0, 0.,500,0,281,true);
   }
 
+  double dx = 0.785*8;
+
   for(int i=0; i<20; i++) {
-    hits[i].setLocalC( i*5.0 - 50 );
+    hits[i].setLocalC( i*dx - 50 );
     hits[i].setLocalT( -0.45 );
   }
 
   for(int i=20; i<40; i++) {
-    hits[i].setLocalC( (i-20)*5.0 - 50 );
+    hits[i].setLocalC( (i-20)*dx - 50 );
     hits[i].setLocalT( -2.45 );
   }
 
