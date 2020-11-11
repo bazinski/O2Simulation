@@ -7,3 +7,5 @@ gphysi.dat
 dpl-config.json
 MCStepLogger*
 AutoDict*
+
+/padrow*.pdf

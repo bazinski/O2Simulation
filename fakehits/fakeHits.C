@@ -36,7 +36,7 @@ void fakeHits(void)
   hits.resize(40);
 
   for (int i=0; i<hits.size(); i++) {
-    hits[i] = o2::trd::HitType(1.,1.,1., 0.0,0.0,0.0, 0.,500,0,281,true);
+    hits[i] = o2::trd::HitType(1.,1.,1., 0.0,0.0,2.0, 0.,500,0,281,true);
   }
 
   double dx = 0.785*8;
