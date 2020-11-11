@@ -10,4 +10,4 @@ o2sim_HitsTRD.root: fakeHits.C o2sim_grp.root
 	root -b -q -l fakeHits.C
 
 trddigits.root: o2sim_HitsTRD.root
-	o2-sim-digitizer-workflow --onlyDet TRD
+	o2-sim-digitizer-workflow -b --onlyDet TRD
