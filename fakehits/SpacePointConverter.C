@@ -53,7 +53,7 @@ public:
 
     // simple conversion of pad / local y coordinate
     // ignore different width of outer pad
-    rct[1] = y / padPlane->getWidthIPad() + 144./2. - 0.5;
+    rct[1] = y / padPlane->getWidthIPad() + 144./2.;
 
     // time coordinate
     if (x<-0.35) {

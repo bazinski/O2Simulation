@@ -104,6 +104,9 @@ public:
     event_digits.e = event_digits.begin() + evrec.getNumberOfObjects();
     std::stable_sort(event_digits.b,event_digits.e,DigitCompare);
 
+    event_hits.b  = hits->begin();
+    event_hits.e  = hits->end();
+
     evno++;
     iEvent++;
     return true;
@@ -123,6 +126,17 @@ public:
 
    DigitRange event_digits, padrow_digits;
    DigitRange Digits() {return event_digits;}
+
+  // A struct to be used for range-based for loops
+  // A template would be nice, but I did not manage to make it work.
+  struct HitRange {
+    TTreeReaderArray<o2::trd::HitType>::iterator& begin() { return b; }
+    TTreeReaderArray<o2::trd::HitType>::iterator& end() { return e; }
+    TTreeReaderArray<o2::trd::HitType>::iterator b, e;
+   };
+
+   HitRange event_hits;
+   HitRange Hits() {return event_hits;}
 
    // DigitRange Digits(int det) {
    //   auto ret = Digits();

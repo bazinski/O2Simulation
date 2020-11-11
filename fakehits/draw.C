@@ -79,11 +79,27 @@ void draw()
         //p->Draw("colz");
         // p->Write();
 
+        padrow->SetTitle(Form("Det %03d row %02d;pad;time bin",det,row));
         padrow->Draw("colz");
 
 
         TMarker m;
         m.SetMarkerStyle(20);
+
+        for (auto& hit : dman.Hits()) {
+
+          // only use hits in current detector
+          if (hit.GetDetectorID()!=det) continue;
+
+          // convert xyz to pad row/col/timebin coordinates
+          auto rct = conv.Hit2RowColTime(hit);
+
+          // restrict to current padrow
+          if (rct[0]<float(row) || rct[0]>float(row+1)) continue;
+
+          cout << hit << "   " << rct[0] << ":" << rct[1] << ":" << rct[2] << endl;
+          m.DrawMarker(rct[1], rct[2]);
+        }
 
         // for(int ihit=0; ihit<trdhits.GetSize(); ihit++) {
         //   auto hit = trdhits[ihit];
