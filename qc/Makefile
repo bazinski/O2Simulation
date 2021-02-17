@@ -8,5 +8,9 @@ run: trddigits.root
 web:
 	open https://qcg-test.cern.ch/?page=objectTree
 
+clean:
+	rm -f padrow_*.pdf *log *log0
+	rm -f dpl-config.json imgui.ini
+
 trddigits.root: ../100ev/trddigits.root
 	ln -sf $< $@
