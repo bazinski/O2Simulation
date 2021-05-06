@@ -39,7 +39,7 @@ void CheckHits(const int detector = 50, // 354, 14, 242, 50
 
   TFile* fin = TFile::Open(hitfile.data());
   TTree* hitTree = (TTree*)fin->Get("o2sim");
-  std::vector<o2::trd::HitType>* hits = nullptr;
+  std::vector<o2::trd::Hit>* hits = nullptr;
   hitTree->SetBranchAddress("TRDHit", &hits);
   int nev = hitTree->GetEntries();
 
@@ -52,7 +52,7 @@ void CheckHits(const int detector = 50, // 354, 14, 242, 50
   // TH2F* h2locClocT = new TH2F("h2locClocT", ";locC (cm);locT(cm)", 100, -60, 60, 100, -3.5, 0.5);
   // TH2F* h2locClocTnEl = new TH2F("h2locClocTnEl", "nEl;locC (cm);locT(cm)", 100, -60, 60, 100, -3.5, 0.5);
 
-  LOG(INFO) << nev << " entries found";
+  LOG(info) << nev << " entries found";
   for (int iev = 0; iev < nev; ++iev) {
     hitTree->GetEvent(iev);
     for (const auto& hit : *hits) {
