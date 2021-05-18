@@ -1,4 +1,5 @@
 
+
 class SpacePointConverter
 {
 private:
@@ -10,7 +11,7 @@ public:
     geo->createPadPlaneArray();
   }
 
-  array<double,3> Hit2RowColTime(const o2::trd::HitType& hit)
+  array<double,3> Hit2RowColTime(const o2::trd::Hit& hit)
   {
     return Local2RowColTime(hit.GetDetectorID()*2,
                             hit.getLocalT(), hit.getLocalC(), hit.getLocalR());

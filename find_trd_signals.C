@@ -40,7 +40,7 @@ std::unordered_map<int, o2::trd::Digit> getDigitsMap(const std::vector<o2::trd::
 
 void find_trd_signals()
 {
-  auto fin = TFile::Open("trddigits.root");
+  auto fin = TFile::Open("foo/trddigits.root");
   TTree* digitTree = (TTree*)fin->Get("o2sim");
   std::vector<o2::trd::Digit>* digits = nullptr;
   std::vector<o2::trd::TriggerRecord>* trigrecords = nullptr;

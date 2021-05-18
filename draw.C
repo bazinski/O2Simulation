@@ -33,7 +33,7 @@ list<DataManager::DigitRange> subranges(DataManager::DigitRange rng)
 }
 
 
-void draw(TString datadir="./")
+void draw(TString datadir="./foo/")
 {
 
   // ----------------------------------------------------------------------

@@ -1,6 +1,6 @@
 
 // #include <>
-
+/**
 std::ostream& operator<<(std::ostream& os, const o2::trd::Digit& d)
 {
   int tbsum=0;
@@ -15,8 +15,9 @@ std::ostream& operator<<(std::ostream& os, const o2::trd::Digit& d)
 
   return os;
 }
+**/
 
-std::ostream& operator<<(std::ostream& os, const o2::trd::HitType& h)
+std::ostream& operator<<(std::ostream& os, const o2::trd::Hit& h)
 {
   os << h.GetDetectorID() << ":"
      << h.getLocalC() << "/" << h.getLocalT() << "/" << h.getLocalR()
@@ -54,7 +55,7 @@ class DataManager
 
 public:
 
-  DataManager(std::string dir="data/")
+  DataManager(std::string dir="./foo/")
   : fhits(0), fdigits(0), trhits(0), trdigits(0), rdrhits(0), rdrdigits(0),
     hits(0), digits(0), trgrecords(0),
     tfno(0), evno(0), iEvent(-1)
@@ -98,10 +99,10 @@ public:
 
     cout << "## Event " << tfno << ":" << evno << ":  "
          << hits->GetSize() << " hits   "
-         << evrec.getNumberOfObjects() << " digits" << endl;
+         << evrec.getNumberOfDigits() << " digits" << endl;
 
-    event_digits.b = digits->begin() + evrec.getFirstEntry();
-    event_digits.e = event_digits.begin() + evrec.getNumberOfObjects();
+    event_digits.b = digits->begin() + evrec.getFirstDigit();
+    event_digits.e = event_digits.begin() + evrec.getNumberOfDigits();
     std::stable_sort(event_digits.b,event_digits.e,DigitCompare);
 
     event_hits.b  = hits->begin();
@@ -130,9 +131,9 @@ public:
   // A struct to be used for range-based for loops
   // A template would be nice, but I did not manage to make it work.
   struct HitRange {
-    TTreeReaderArray<o2::trd::HitType>::iterator& begin() { return b; }
-    TTreeReaderArray<o2::trd::HitType>::iterator& end() { return e; }
-    TTreeReaderArray<o2::trd::HitType>::iterator b, e;
+    TTreeReaderArray<o2::trd::Hit>::iterator& begin() { return b; }
+    TTreeReaderArray<o2::trd::Hit>::iterator& end() { return e; }
+    TTreeReaderArray<o2::trd::Hit>::iterator b, e;
    };
 
    HitRange event_hits;
@@ -148,8 +149,8 @@ public:
   // DigitRange Digits() {
   //   DigitRange ret;
   //   auto evrec = GetTriggerRecord();
-  //   ret.b = digits->begin() + evrec.getFirstEntry();
-  //   ret.e = ret.begin() + evrec.getNumberOfObjects();
+  //   ret.b = digits->begin() + evrec.getFirstDigit();
+  //   ret.e = ret.begin() + evrec.getNumberOfDigits();
   //
   //   // sort the digits for this event
   //   std::stable_sort(ret.b,ret.e,DigitCompare);
@@ -185,8 +186,8 @@ public:
   {
 
     auto evrec = GetTriggerRecord();
-    auto b = digits->begin() + evrec.getFirstEntry();
-    auto e = b + evrec.getNumberOfObjects();
+    auto b = digits->begin() + evrec.getFirstDigit();
+    auto e = b + evrec.getNumberOfDigits();
 
     cout << evrec << endl;
     // cout << b << endl;
@@ -216,7 +217,7 @@ protected:
     fhits->GetObject("o2sim", trhits);
 
     rdrhits = new TTreeReader(trhits);
-    hits = new TTreeReaderArray<o2::trd::HitType>(*rdrhits, "TRDHit");
+    hits = new TTreeReaderArray<o2::trd::Hit>(*rdrhits, "TRDHit");
   }
 
   void ConnectDigitsFile(std::string fname)
@@ -237,7 +238,7 @@ private:
   TTree *trhits, *trdigits, *trtrgrec;
   TTreeReader *rdrhits, *rdrdigits, *rdrtrgreg;
 
-  TTreeReaderArray<o2::trd::HitType>* hits;
+  TTreeReaderArray<o2::trd::Hit>* hits;
   TTreeReaderArray<o2::trd::Digit>* digits;
   TTreeReaderArray<o2::trd::TriggerRecord>* trgrecords;
 
