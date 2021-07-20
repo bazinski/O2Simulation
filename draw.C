@@ -7,7 +7,7 @@
 
 bool cmp(const o2::trd::Digit a, const o2::trd::Digit b)
 {
-  return (a.getDetector()==b.getDetector() && a.getRow()==b.getRow());
+  return (a.getDetector()==b.getDetector() && a.getPadRow()==b.getPadRow());
 }
 
 list<DataManager::DigitRange> subranges(DataManager::DigitRange rng)
@@ -59,7 +59,7 @@ void draw(TString datadir="./foo/")
         padrow->Reset();
 
         int det = seq.begin()->getDetector();
-        int row = seq.begin()->getRow();
+        int row = seq.begin()->getPadRow();
 
         cout << (*seq.begin()) << " digits: "
              << (seq.end()-seq.begin()) << endl;
@@ -69,7 +69,7 @@ void draw(TString datadir="./foo/")
 
           auto adc = dig.getADC();
           for (int i=0;i<30;i++) {
-            padrow->Fill(dig.getPad(), i, adc[i]);
+            padrow->Fill(dig.getPadCol(), i, adc[i]);
           }
         }
 

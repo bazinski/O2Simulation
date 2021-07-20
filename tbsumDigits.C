@@ -18,10 +18,10 @@
 using namespace o2::trd;
 constexpr int kMINENTRIES = 100;
 
-void tbsumDigits(std::string digifile = "/scratch/alice/trddigits.root",
-                 std::string hitfile = "/scratch/alice/o2sim_HitsTRD.root",
+void tbsumDigits(std::string digifile = "./foo/trddigits.root",
+                 std::string hitfile = "./foo/o2sim_HitsTRD.root",
                  std::string inputGeom = "",
-                 std::string paramfile = "/scratch/alice/o2sim_par.root")
+                 std::string paramfile = "./foo/o2sim_par.root")
 {
   TFile* fin = TFile::Open(digifile.data());
   TTree* digitTree = (TTree*)fin->Get("o2sim");
@@ -44,8 +44,8 @@ void tbsumDigits(std::string digifile = "/scratch/alice/trddigits.root",
           // loop over det, pad, row?
           auto adcs = digit.getADC();
           int det = digit.getDetector();
-          int row = digit.getRow();
-          int pad = digit.getPad();
+          int row = digit.getPadRow();
+          int pad = digit.getPadCol();
 
           for (int tb = 0; tb < o2::trd::constants::TIMEBINS; ++tb) {
             ADC_t adc = adcs[tb];

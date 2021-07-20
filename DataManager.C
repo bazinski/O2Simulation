@@ -10,7 +10,7 @@ std::ostream& operator<<(std::ostream& os, const o2::trd::Digit& d)
     tbsum += adcs[i];
   }
 
-  os << d.getDetector() << ":" << d.getRow() << ":" << d.getPad()
+  os << d.getDetector() << ":" << d.getPadRow() << ":" << d.getPadCol()
      << "  tbsum=" << tbsum;
 
   return os;
@@ -29,8 +29,8 @@ std::ostream& operator<<(std::ostream& os, const o2::trd::Hit& h)
 int DigitIdx(const o2::trd::Digit& a)
 {
   int ret = a.getDetector();
-  ret *= 1000; ret += a.getRow();
-  ret *= 1000; ret += a.getPad();
+  ret *= 1000; ret += a.getPadRow();
+  ret *= 1000; ret += a.getPadCol();
   return ret;
 }
 
@@ -166,7 +166,7 @@ public:
   //     ret.b++;
   //   }
   //
-  //   while(ret.b->getDetector() == det || ret.b->getRow() < row ) {
+  //   while(ret.b->getDetector() == det || ret.b->getPadRow() < row ) {
   //     ret.b++;
   //   }
   //
@@ -174,7 +174,7 @@ public:
   //     if c
   //   }
   //
-  //   while( ret.b->getDetector() == det ret.b->getRow() < row ) {ret.b++;}
+  //   while( ret.b->getDetector() == det ret.b->getPadRow() < row ) {ret.b++;}
   //
   //
   //   // sort the digits for this event
