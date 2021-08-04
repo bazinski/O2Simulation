@@ -48,15 +48,22 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
   int tbhi = 0;
   int tblo = 0;
 
+  int det = 0;
+  int row = 0;
+  int pad = 0;
+  int i = 0;
+  int j = 0;
+  int k = 0;
   for (int iev = 0; iev < nev; iev++) {
     digitTree->GetEvent(iev);
       int tbsum[540][16][144] = {{{0}}};
       for (const auto& digit : *digitCont) {
           // loop over det, pad, row?
           auto adcs = digit.getADC();
-          int det = digit.getDetector();
-          int row = digit.getPadRow();
-          int pad = digit.getPadCol();
+          det = digit.getDetector();
+          //cout<<det<<endl;
+          row = digit.getPadRow();
+          pad = digit.getPadCol();
           for (int tb = 0; tb < o2::trd::constants::TIMEBINS; tb++) {
             ADC_t adc = adcs[tb];
             if (adc == (ADC_t)SimParam::instance()->getADCoutRange()) {
@@ -65,31 +72,36 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
             }
             tbsum[det][row][pad] += adc; 
           }
-          htbsum->Fill(tbsum[det][row][pad]);        
+          htbsum->Fill(tbsum[det][row][pad]);
+          //cout<< tbsum[det][row][pad]<<endl;       
         }// end digitcont
       for (int d=0;d<540;d++) {
         for (int r=0;r<16;r++) {
           for (int c=0;c<144;c++) {
             if (tbsum[d][r][c]>tbsum[d][r][c-1] && tbsum[d][r][c]>tbsum[d][r][c+1]) {
               if (tbsum[d][r][c-1] > tbsum[d][r][c+1]) {
-                htbmax->Fill(tbsum[d][r][c]);
-                htbhi->Fill(tbsum[d][r][c-1]);
-                htblo->Fill(tbsum[d][r][c+1]);
                 tbmax = tbsum[d][r][c];
                 tbhi = tbsum[d][r][c-1];
                 tblo = tbsum[d][r][c+1];
-
-                //cout<<tblo<<endl;
-                t->Fill(d,r,c,tbmax,tbhi,tblo);
-              } else {
-                htbmax->Fill(tbsum[d][r][c]);
-                htbhi->Fill(tbsum[d][r][c+1]);
-                htblo->Fill(tbsum[d][r][c-1]);
+                if (tblo != 0){
+                  htbmax->Fill(tbsum[d][r][c]);
+                  htbhi->Fill(tbsum[d][r][c-1]);
+                  htblo->Fill(tbsum[d][r][c+1]);
+                  
+                  t->Fill(d,r,c,tbmax,tbhi,tblo);
+                }
+              } 
+              else {
                 tbmax = tbsum[d][r][c];
                 tbhi = tbsum[d][r][c+1];
                 tblo = tbsum[d][r][c-1];
-                //cout<<tblo<<endl;
-                t->Fill(d,r,c,tbmax,tbhi,tblo);
+                if (tblo != 0){
+                  htbmax->Fill(tbsum[d][r][c]);
+                  htbhi->Fill(tbsum[d][r][c+1]);
+                  htblo->Fill(tbsum[d][r][c-1]);
+                  
+                  t->Fill(d,r,c,tbmax,tbhi,tblo);
+                }
               }//end else
             }// end if (tbsum[d][r][c]>tbsum[d][r][c-1] && tbsum[d][r][c]>tbsum[d][r][c+1])
           }  // end for c
@@ -97,10 +109,12 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
       }// end for d 
     } //end event 
 
+    cout<<i<<endl;
+    //cout<<"tbhi zeros: "<<k<<endl;
+    //cout<<"tblo zeros: "<<j<<endl;
     t->Write();
     TCanvas* c3 = new TCanvas("c3", "TB Sum", 600, 600);
-
-    T
+    
 
     htbmax->SetLineColor(kRed);
     htblo->SetLineColor(kBlue);
