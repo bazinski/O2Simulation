@@ -40,7 +40,8 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
   TH1F* htbhi = new TH1F("htbhi", "Tbsum", 100, 0, 3000);
   TH1F* htblo = new TH1F("htblo", "Tbsum", 100, 0, 3000);
   TH1F* htbmax = new TH1F("htbmax", "Tbsum", 100, 0, 3000);
-  
+  TH1F* ph = new TH1F("pulseheight", "Pulseheight", 100, 0, 3000);
+
   LOG(INFO) << nev << " entries found";
 
   TNtuple *t = new TNtuple("nt","nt","d:r:c:m:h:l");
@@ -48,36 +49,41 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
   int tbhi = 0;
   int tblo = 0;
 
+  int pulseheight = 0;
+
   int det = 0;
   int row = 0;
   int pad = 0;
-  int i = 0;
-  int j = 0;
-  int k = 0;
+
+  //int digits[540][16][144][30] = {{{{0}}}};
+
   for (int iev = 0; iev < nev; iev++) {
     digitTree->GetEvent(iev);
-      int tbsum[540][16][144] = {{{0}}};
+    int tbsum[540][16][144] = {{{0}}};
       for (const auto& digit : *digitCont) {
           // loop over det, pad, row?
           auto adcs = digit.getADC();
           det = digit.getDetector();
-          //cout<<det<<endl;
           row = digit.getPadRow();
           pad = digit.getPadCol();
+          //cout<<det<<" "<<row<<" "<<pad<<" "<<endl;
           for (int tb = 0; tb < o2::trd::constants::TIMEBINS; tb++) {
             ADC_t adc = adcs[tb];
+            //data[det][row][pad][tb] = adc;
             if (adc == (ADC_t)SimParam::instance()->getADCoutRange()) {
                //LOG(INFO) << "Out of range ADC " << adc;
               continue;
             }
+            //cout<<adc<<endl;
             tbsum[det][row][pad] += adc; 
           }
           htbsum->Fill(tbsum[det][row][pad]);
-          //cout<< tbsum[det][row][pad]<<endl;       
+          //cout<<det<<" "<<row<<" "<<pad<<" "<<tbsum[det][row][pad]<<endl;
         }// end digitcont
       for (int d=0;d<540;d++) {
         for (int r=0;r<16;r++) {
           for (int c=0;c<144;c++) {
+            //cout<<"hello"<<endl;
             if (tbsum[d][r][c]>tbsum[d][r][c-1] && tbsum[d][r][c]>tbsum[d][r][c+1]) {
               if (tbsum[d][r][c-1] > tbsum[d][r][c+1]) {
                 tbmax = tbsum[d][r][c];
@@ -87,9 +93,15 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
                   htbmax->Fill(tbsum[d][r][c]);
                   htbhi->Fill(tbsum[d][r][c-1]);
                   htblo->Fill(tbsum[d][r][c+1]);
-                  
                   t->Fill(d,r,c,tbmax,tbhi,tblo);
                 }
+                /*
+                for (int tb = 0; tb<30 ; tb++){
+                  pulseheight = digits[d][r][c][tb] + digits[d][r][c + 1][tb] +digits[d][r][c - 1][tb];
+                  if (pulseheight!=0){
+                    ph->Fill(pulseheight);
+                  }
+                } */
               } 
               else {
                 tbmax = tbsum[d][r][c];
@@ -102,6 +114,13 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
                   
                   t->Fill(d,r,c,tbmax,tbhi,tblo);
                 }
+                /*
+                for (int tb = 0; tb<30 ; tb++){
+                  pulseheight = digits[d][r][c][tb] + digits[d][r][c + 1][tb] + digits[d][r][c - 1][tb];
+                  if (pulseheight!=0){
+                    ph->Fill(pulseheight); 
+                  }
+                } */
               }//end else
             }// end if (tbsum[d][r][c]>tbsum[d][r][c-1] && tbsum[d][r][c]>tbsum[d][r][c+1])
           }  // end for c
@@ -109,22 +128,22 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
       }// end for d 
     } //end event 
 
-    cout<<i<<endl;
-    //cout<<"tbhi zeros: "<<k<<endl;
-    //cout<<"tblo zeros: "<<j<<endl;
     t->Write();
     TCanvas* c3 = new TCanvas("c3", "TB Sum", 600, 600);
-    
+    //c3->Divide(1,2);
 
     htbmax->SetLineColor(kRed);
     htblo->SetLineColor(kBlue);
     htbhi->SetLineColor(kGreen); 
     htbsum->SetLineColor(kBlack);
 
+    //c3->cd(1);
     htbsum->Draw();
     htbmax->Draw("SAME");
     htbhi->Draw("SAME");
     htblo->Draw("SAME"); 
+    //c3->cd(2);
+    //ph->Draw();
 
     TLegend* border = new TLegend(0.7, 0.7, 0.9, 0.9);
     border->SetBorderSize(0); // no border
