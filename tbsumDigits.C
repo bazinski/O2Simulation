@@ -41,7 +41,7 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
   TH1F* htbhi = new TH1F("htbhi", "Tbsum", 100, 0, 3000);
   TH1F* htblo = new TH1F("htblo", "Tbsum", 100, 0, 3000);
   TH1F* htbmax = new TH1F("htbmax", "Tbsum", 100, 0, 3000);
-  TH1F* ph = new TH1F("pulseheight", "Pulseheight", 100, 0, 30);
+  TH1F* ph = new TH1F("pulseheight", "Pulseheight", 30, -0.5, 29.5);
 
   LOG(INFO) << nev << " entries found";
 
@@ -88,7 +88,7 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
         }// end digitcont
       for (int d=0;d<540;d++) {
         for (int r=0;r<16;r++) {
-          for (int c=0;c<144;c++) {
+          for (int c=1;c<143;c++) {
             if (tbsum[d][r][c]>tbsum[d][r][c-1] && tbsum[d][r][c]>tbsum[d][r][c+1]) {
               if (tbsum[d][r][c-1] > tbsum[d][r][c+1]) {
                 tbmax = tbsum[d][r][c];
@@ -102,10 +102,10 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
                   htbhi->Fill(tbsum[d][r][c-1]);
                   htblo->Fill(tbsum[d][r][c+1]);
                   t->Fill(d,r,c,tbmax,tbhi,tblo);
-                  int phVals[30] = {0};
+                  int phVal = 0;
                   for (int tb = 0 ; tb<30;tb++){
-                    phVals[tb] = (adcMax->second)[tb] + (adcHi->second)[tb] + (adcLo->second)[tb];
-                    ph->Fill(phVals[tb]);
+                    phVal = ((adcMax->second)[tb] + (adcHi->second)[tb] + (adcLo->second)[tb])/3;
+                    ph->Fill(tb,phVal);
                   }
                 }
               } 
@@ -122,10 +122,10 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
                   htblo->Fill(tbsum[d][r][c-1]);
                   
                   t->Fill(d,r,c,tbmax,tbhi,tblo);
-                  int phVals[30] = {0};
+                  int phVal = 0;
                   for (int tb = 0 ; tb<30;tb++){
-                    phVals[tb] = (adcMax->second)[tb] + (adcHi->second)[tb] + (adcLo->second)[tb];
-                    ph->Fill(phVals[tb]);
+                    phVal = ((adcMax->second)[tb] + (adcHi->second)[tb] + (adcLo->second)[tb])/3;
+                    ph->Fill(tb,phVal);
                   }
                 }
               }//end else
@@ -135,35 +135,48 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
       }// end for d 
     } //end event 
 
-    t->Write();
-    TCanvas* c3 = new TCanvas("c3", "TB Sum", 600, 600);
-    gPad->SetLogy();
-    c3->Divide(1,2);
+  t->Write();
+  TCanvas* c3 = new TCanvas("c3", "TB Sum", 600, 600);
+  gPad->SetLogy();
+  //c3->Divide(1,2);
 
-    htbmax->SetLineColor(kRed);
-    htblo->SetLineColor(kBlue);
-    htbhi->SetLineColor(kGreen); 
-    htbsum->SetLineColor(kBlack);
+  htbmax->SetLineColor(kRed);
+  htblo->SetLineColor(kBlue);
+  htbhi->SetLineColor(kGreen); 
+  htbsum->SetLineColor(kBlack);
 
-    c3->cd(1);
-    htbsum->Draw();
-    htbmax->Draw("SAME");
-    htbhi->Draw("SAME");
-    htblo->Draw("SAME"); 
-    c3->cd(2);
-    ph->Draw();
+  //c3->cd(1);
+  htbsum->Draw();
+  htbmax->Draw("SAME");
+  htbhi->Draw("SAME");
+  htblo->Draw("SAME"); 
+  //c3->cd(2);
 
-    TLegend* border = new TLegend(0.7, 0.7, 0.9, 0.9);
-    border->SetBorderSize(0); // no border
-    border->SetFillStyle(0);
-    border->SetFillColor(0); // Legend background should be white
-    border->SetTextFont(42);
-    border->SetTextSize(0.03); // Increase entry font size!
-    border->AddEntry(htbsum, "htbsum", "l");
-    border->AddEntry(htbmax, "htbmax", "l");
-    border->AddEntry(htbhi, "htbhi", "l");
-    border->AddEntry(htblo, "htblo", "l");
-    border->Draw();
 
-    c3->SaveAs("tbsum.pdf");
+  TLegend* border = new TLegend(0.7, 0.7, 0.9, 0.9);
+  border->SetBorderSize(0); // no border
+  border->SetFillStyle(0);
+  border->SetFillColor(0); // Legend background should be white
+  border->SetTextFont(42);
+  border->SetTextSize(0.03); // Increase entry font size!
+  border->AddEntry(htbsum, "htbsum", "l");
+  border->AddEntry(htbmax, "htbmax", "l");
+  border->AddEntry(htbhi, "htbhi", "l");
+  border->AddEntry(htblo, "htblo", "l");
+  border->Draw();
+
+  c3->SaveAs("tbsum.pdf");
+
+  TCanvas* c4 = new TCanvas("c4", "Pulse Height", 600, 600);
+  ph->Draw();
+  ph->SetLineColor(kBlack);
+  TLegend* border2 = new TLegend(0.7, 0.7, 0.9, 0.9);
+  border2->SetBorderSize(0); // no border
+  border2->SetFillStyle(0);
+  border2->SetFillColor(0); // Legend background should be white
+  border2->SetTextFont(42);
+  border2->SetTextSize(0.03); // Increase entry font size!
+  border2->AddEntry(ph, "pulse height", "l");
+  border2->Draw();
+  c4->SaveAs("pulseheight.pdf");
 }// end of macro
