@@ -22,9 +22,9 @@ using namespace std;
 
 constexpr int kMINENTRIES = 100;
 
-void tbsumDigits(std::string digifile = "./foo/trddigits.root",
-                 std::string hitfile = "./foo/o2sim_HitsTRD.root",
-                 std::string inputGeom = ""
+void tbsumDigits(std::string digifile = "./RawData/trddigits-1ktf-2021-08-11-10h17.root"
+                 //std::string hitfile = "./foo/o2sim_HitsTRD.root",
+                 //std::string inputGeom = ""
                  //std::string paramfile = "./foo/o2sim_par.root"
                  )
 {
@@ -56,7 +56,6 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
   int row = 0;
   int pad = 0;
   int channel = 0;
-
    map<tuple<int,int,int>,ArrayADC> dataMap;
 
   for (int iev = 0; iev < nev; iev++) {
@@ -64,24 +63,22 @@ void tbsumDigits(std::string digifile = "./foo/trddigits.root",
     int tbsum[540][16][144] = {{{0}}};
       for (const auto& digit : *digitCont) {
           // loop over det, pad, row?
-
           auto adcs = digit.getADC();
-          det = digit.getDetector();
+          det = digit.getDetector()/2;
           row = digit.getPadRow();
           pad = digit.getPadCol();
+          if (pad <0){cout<<pad<<endl;}
           channel = digit.getChannel();
           dataMap.insert(make_pair(make_tuple(det,row,pad), adcs));
           if (channel == 0 || channel == 19 || channel ==20){continue;}
           else{
             for (int tb = 0; tb < o2::trd::constants::TIMEBINS; tb++) {
               ADC_t adc = adcs[tb];
-
               if (adc == (ADC_t)SimParam::instance()->getADCoutRange()) {
                 //LOG(INFO) << "Out of range ADC " << adc;
                 continue;
               }
-              tbsum[det][row][pad] += adc; 
-              
+              tbsum[det][row][pad] += adc;
             }
             htbsum->Fill(tbsum[det][row][pad]);
           }
