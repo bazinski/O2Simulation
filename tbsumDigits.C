@@ -67,7 +67,7 @@ void tbsumDigits(std::string digifile = "./RawData/trddigits-1ktf-2021-08-11-10h
           det = digit.getDetector()/2;
           row = digit.getPadRow();
           pad = digit.getPadCol();
-          if (pad <0){cout<<pad<<endl;}
+          if (pad <0 && digit.getChannel() !=22){cout<<pad<<endl;}
           channel = digit.getChannel();
           dataMap.insert(make_pair(make_tuple(det,row,pad), adcs));
           if (channel == 0 || channel == 19 || channel ==20){continue;}
